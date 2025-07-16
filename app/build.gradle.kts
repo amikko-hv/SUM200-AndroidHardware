@@ -56,4 +56,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Core CameraX API for camera features
+    implementation(libs.androidx.camera.core)
+
+    // Lower level API that CameraX builds upon
+    implementation(libs.androidx.camera.camera2)
+
+    // Lifecycle aware camera management. Eg. pause and resume
+    implementation(libs.androidx.camera.lifecycle)
+
+    // Include preview view for camera feed
+    implementation(libs.androidx.camera.view)
+
 }
