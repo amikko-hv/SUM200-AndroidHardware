@@ -82,17 +82,17 @@ fun CameraScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val pictureValue = picture.value
-            if (pictureValue != null) {
-                CameraState(picture)
+            if (pictureValue == null) {
+                CameraState(context, cameraController, onPictureTaken)
             } else {
-                PictureDisplayState(context, cameraController, onPictureTaken)
+                PictureDisplayState(picture)
             }
         }
     }
 }
 
 @Composable
-fun PictureDisplayState(
+fun CameraState(
     context: Context,
     cameraController: LifecycleCameraController,
     onPictureTaken: (Bitmap) -> Unit
@@ -111,7 +111,7 @@ fun PictureDisplayState(
 }
 
 @Composable
-fun CameraState(
+fun PictureDisplayState(
     picture: MutableState<Bitmap?>
 ) {
     Button(
