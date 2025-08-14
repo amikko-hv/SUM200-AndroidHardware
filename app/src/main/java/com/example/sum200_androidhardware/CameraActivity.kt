@@ -62,11 +62,15 @@ fun CameraScreen() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // Picture will hold the image taken with the camera
     val picture = remember { mutableStateOf<Bitmap?>(null) }
+
+    // Callback to update the picture
     val onPictureTaken = { bitmap: Bitmap ->
         picture.value = bitmap
     }
 
+    // Create a camera controller for easy access to camera features
     val cameraController = remember {
         LifecycleCameraController(context).apply {
             setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA)
@@ -82,6 +86,9 @@ fun CameraScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val pictureValue = picture.value
+
+            // If no picture has been taken, let the user take a picture with the camera.
+            // Otherwise the display the picture that has been taken.
             if (pictureValue == null) {
                 CameraState(context, cameraController, onPictureTaken)
             } else {
@@ -97,6 +104,7 @@ fun CameraState(
     cameraController: LifecycleCameraController,
     onPictureTaken: (Bitmap) -> Unit
 ) {
+    // Click the button to take a picture
     Button(
         onClick = {
             takePicture(context, cameraController, onPictureTaken)
@@ -104,6 +112,8 @@ fun CameraState(
     ) {
         Text("Take Picture")
     }
+
+    // Preview of what the camera currently sees
     CameraPreview(
         modifier = Modifier.fillMaxSize(),
         cameraController = cameraController
@@ -114,6 +124,7 @@ fun CameraState(
 fun PictureDisplayState(
     picture: MutableState<Bitmap?>
 ) {
+    // Button to remove the current picture in order to take a new one
     Button(
         onClick = {
             picture.value = null
@@ -121,6 +132,8 @@ fun PictureDisplayState(
     ) {
         Text("New Picture")
     }
+
+    // Display the current picture
     Image(
         bitmap = picture.value!!.asImageBitmap(),
         "Picture taken"
@@ -129,6 +142,9 @@ fun PictureDisplayState(
 
 @Composable
 fun CameraPreview(modifier: Modifier = Modifier, cameraController: CameraController) {
+    // CameraX's Preview use case is not directly compatible with Jetpack Compose.
+    // It only provides PreviewView for the older View based UI.
+    // AndroidView makes Views compatible with Compose.
     AndroidView(
         factory = { ctx ->
             PreviewView(ctx).apply {
@@ -145,6 +161,9 @@ fun CameraPreview(modifier: Modifier = Modifier, cameraController: CameraControl
 
 fun takePicture(context: Context, cameraController: CameraController, onPictureTaken: (Bitmap) -> Unit ) {
     val executor = ContextCompat.getMainExecutor(context)
+
+    // Take a picture with the camera controller.
+    // We use an anonymous object to override ImageCapture callbacks
     cameraController.takePicture(executor, object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureSuccess(image: ImageProxy) {
             super.onCaptureSuccess(image)
