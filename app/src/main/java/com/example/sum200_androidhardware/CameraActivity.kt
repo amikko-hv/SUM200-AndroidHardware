@@ -16,18 +16,21 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -47,11 +50,7 @@ class CameraActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SUM200AndroidHardwareTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CameraScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                CameraScreen()
             }
         }
     }
@@ -59,7 +58,7 @@ class CameraActivity : ComponentActivity() {
 
 
 @Composable
-fun CameraScreen(modifier: Modifier = Modifier) {
+fun CameraScreen() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -75,11 +74,29 @@ fun CameraScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    CameraPreview(
-        modifier = modifier.fillMaxSize(),
-        cameraController = cameraController
-    )
+    Scaffold(Modifier.fillMaxSize()) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val pictureValue = picture.value
+            if (pictureValue != null) {
+                CameraState(picture)
+            } else {
+                PictureDisplayState(context, cameraController, onPictureTaken)
+            }
+        }
+    }
+}
 
+@Composable
+fun PictureDisplayState(
+    context: Context,
+    cameraController: LifecycleCameraController,
+    onPictureTaken: (Bitmap) -> Unit
+) {
     Button(
         onClick = {
             takePicture(context, cameraController, onPictureTaken)
@@ -87,14 +104,27 @@ fun CameraScreen(modifier: Modifier = Modifier) {
     ) {
         Text("Take Picture")
     }
+    CameraPreview(
+        modifier = Modifier.fillMaxSize(),
+        cameraController = cameraController
+    )
+}
 
-    val pictureValue = picture.value
-    if (pictureValue != null) {
-        Image(
-            bitmap = pictureValue.asImageBitmap(),
-            "Picture taken"
-        )
+@Composable
+fun CameraState(
+    picture: MutableState<Bitmap?>
+) {
+    Button(
+        onClick = {
+            picture.value = null
+        }
+    ) {
+        Text("New Picture")
     }
+    Image(
+        bitmap = picture.value!!.asImageBitmap(),
+        "Picture taken"
+    )
 }
 
 @Composable
@@ -122,12 +152,4 @@ fun takePicture(context: Context, cameraController: CameraController, onPictureT
             onPictureTaken(bitmap)
         }
     })
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CameraScreenPreview() {
-    SUM200AndroidHardwareTheme {
-        CameraScreen()
-    }
 }
