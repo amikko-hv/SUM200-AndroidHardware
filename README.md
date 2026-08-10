@@ -2,7 +2,7 @@
 
 Demonstration of accessing hardware features in an Android application.
 
-## Cameara
+## Camera
 
 [CameraActivity](https://github.com/amikko-hv/SUM200-AndroidHardware/blob/master/app/src/main/java/com/example/sum200_androidhardware/CameraActivity.kt) requests user permission to access the camera. The [CameraX library](https://developer.android.com/media/camera/camerax) to access the camera to take pictures and display a preview.
 
