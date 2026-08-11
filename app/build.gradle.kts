@@ -47,7 +47,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
@@ -60,7 +59,7 @@ dependencies {
     // Lower level API that CameraX builds upon
     implementation(libs.androidx.camera.camera2)
 
-    // Lifecycle aware camera management. Eg. pause and resume
+    // Lifecycle aware camera management e.g. pause and resume
     implementation(libs.androidx.camera.lifecycle)
 
     // Include preview view for camera feed
