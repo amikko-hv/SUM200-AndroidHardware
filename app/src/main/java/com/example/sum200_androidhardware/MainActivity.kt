@@ -28,7 +28,8 @@ class MainActivity : ComponentActivity() {
             SUM200AndroidHardwareTheme {
                 MainScreen(
                     onStartCameraActivity = { startCameraActivity() },
-                    onStartShakeActivity = { startShakeActivity() }
+                    onStartShakeActivity = { startShakeActivity() },
+                    onStartGpsActivity = { startGpsActivity() }
                 )
             }
         }
@@ -43,12 +44,18 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, ShakeActivity::class.java)
         startActivity(intent)
     }
+
+    private fun startGpsActivity() {
+        val intent = Intent(this, GpsActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
 fun MainScreen(
     onStartCameraActivity: () -> Unit,
-    onStartShakeActivity: () -> Unit
+    onStartShakeActivity: () -> Unit,
+    onStartGpsActivity: () -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -70,6 +77,12 @@ fun MainScreen(
             ) {
                 Text("Shake Demo")
             }
+
+            Button(
+                onClick = onStartGpsActivity
+            ) {
+                Text("GPS Demo")
+            }
         }
     }
 }
@@ -80,7 +93,8 @@ fun MainScreenPreview() {
     SUM200AndroidHardwareTheme {
         MainScreen(
             onStartCameraActivity = {},
-            onStartShakeActivity = {}
+            onStartShakeActivity = {},
+            onStartGpsActivity = {}
         )
     }
 }

@@ -2,4 +2,5 @@
     <string name="app_name">SUM200-AndroidHardware</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_shake">ShakeActivity</string>
+    <string name="title_activity_gps">GpsDemo</string>
 </resources>
