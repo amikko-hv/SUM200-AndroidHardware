@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
@@ -23,16 +25,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.sum200_androidhardware.ui.theme.SUM200AndroidHardwareTheme
@@ -40,12 +44,6 @@ import com.example.sum200_androidhardware.ui.theme.SUM200AndroidHardwareTheme
 class CameraActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Request camera permission
-        val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-        if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 0)
-        }
 
         enableEdgeToEdge()
         setContent {
@@ -62,6 +60,43 @@ fun CameraScreen() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // Keep track of whether the user has already granted camera access.
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    // Ask the user for camera permission and update the UI when the answer comes back.
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        hasCameraPermission = granted
+    }
+
+    // Trigger the permission dialog when the screen opens and permission is missing.
+    LaunchedEffect(Unit) {
+        if (!hasCameraPermission) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    // If the user has not granted camera permission, show a message and do not create the camera controller.
+    if (!hasCameraPermission) {
+        Scaffold(Modifier.fillMaxSize()) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Camera permission is required")
+            }
+        }
+        return
+    }
+
     // Picture will hold the image taken with the camera
     val picture = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -70,6 +105,8 @@ fun CameraScreen() {
         picture.value = bitmap
     }
 
+
+    // Only create and bind the camera controller after permission is granted.
     // Create a camera controller for easy access to camera features
     val cameraController = remember {
         LifecycleCameraController(context).apply {
@@ -78,6 +115,7 @@ fun CameraScreen() {
         }
     }
 
+    // UI for using the camera. If a picture has been taken, display it. Otherwise, show the camera preview.
     Scaffold(Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
@@ -88,7 +126,7 @@ fun CameraScreen() {
             val pictureValue = picture.value
 
             // If no picture has been taken, let the user take a picture with the camera.
-            // Otherwise the display the picture that has been taken.
+            // Otherwise, the display the picture that has been taken.
             if (pictureValue == null) {
                 CameraState(context, cameraController, onPictureTaken)
             } else {
