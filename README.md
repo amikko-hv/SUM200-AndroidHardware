@@ -1,4 +1,4 @@
-# SUM200-FirebaseDemo
+# SUM200-AndroidHardware
 
 Demonstration of accessing hardware features in an Android application.
 
