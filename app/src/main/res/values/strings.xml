@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SUM200-AndroidHardware</string>
     <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_shake">ShakeActivity</string>
 </resources>

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <!-- The app requires a camera and will only work on devices with one -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
 
     <!-- Need permission to use the camera -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -34,6 +35,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ShakeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_shake"
+            android:theme="@style/Theme.SUM200AndroidHardware"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

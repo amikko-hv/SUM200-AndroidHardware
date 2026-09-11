@@ -27,7 +27,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SUM200AndroidHardwareTheme {
                 MainScreen(
-                    onStartCameraActivity = { startCameraActivity() }
+                    onStartCameraActivity = { startCameraActivity() },
+                    onStartShakeActivity = { startShakeActivity() }
                 )
             }
         }
@@ -37,11 +38,17 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, CameraActivity::class.java)
         startActivity(intent)
     }
+
+    private fun startShakeActivity() {
+        val intent = Intent(this, ShakeActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
 fun MainScreen(
-    onStartCameraActivity: () -> Unit
+    onStartCameraActivity: () -> Unit,
+    onStartShakeActivity: () -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -57,6 +64,12 @@ fun MainScreen(
             ) {
                 Text("Camera Demo")
             }
+
+            Button(
+                onClick = onStartShakeActivity
+            ) {
+                Text("Shake Demo")
+            }
         }
     }
 }
@@ -66,7 +79,8 @@ fun MainScreen(
 fun MainScreenPreview() {
     SUM200AndroidHardwareTheme {
         MainScreen(
-            onStartCameraActivity = {}
+            onStartCameraActivity = {},
+            onStartShakeActivity = {}
         )
     }
 }
